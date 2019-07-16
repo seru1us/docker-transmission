@@ -52,7 +52,7 @@ RUN \
 # Install GNU libc (aka glibc)
 # https://github.com/sgerrand/alpine-pkg-glibc
 # https://github.com/Technosoft2000/docker-calibre-web/blob/master/Dockerfile
-COPY LOCALE.md /init/
+COPY LOCALE.md /tmp/
 RUN \
 
     ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases/download" && \
@@ -83,7 +83,7 @@ RUN \
     # iterate through all locale and install it
     # NOTE: locale -a is not available in alpine linux, 
     # use `/usr/glibc-compat/bin/locale -a` instead
-    cat /init/LOCALE.md | parallel "echo generate locale {}; /usr/glibc-compat/bin/localedef --force --inputfile {} --charmap UTF-8 {}.UTF-8;" && \
+    cat /tmp/LOCALE.md | parallel "echo generate locale {}; /usr/glibc-compat/bin/localedef --force --inputfile {} --charmap UTF-8 {}.UTF-8;" && \
 
     apk del .build-dependencies && \
 
