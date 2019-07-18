@@ -23,5 +23,3 @@ chown abc:abc \
 
 chmod 755 /config/blocklist-update.sh
 
-sed -i "s/51413/$ENVPORT/g" /defaults/settings.json
-sed -i "s/51413/$ENVPORT/g" /config/settings.json
