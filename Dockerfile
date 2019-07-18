@@ -45,8 +45,7 @@ RUN \
  tar xf \
 	/tmp/kettu.tar.gz -C \
 	/kettu --strip-components=1 && \
- # This is added so the torrent port can be determined from an env. variable
- sed -i "s/ENVPORT/$ENVPORT/g" /root/defaults/settings.json
+
  echo "**** cleanup ****" && \
  rm -rf \
 	/tmp/*
