@@ -8,6 +8,10 @@ mkdir -p \
 [[ ! -f /config/settings.json ]] && cp \
 	/defaults/settings.json /config/settings.json
 
+# copy torrent_complete.sh
+[[ ! -f /config/torrent_complete.sh ]] && cp \
+	/defaults/torrent_complete.sh /config/torrent_complete.sh
+
 # copy blocklist-update script
 [[ ! -f /config/blocklist-update.sh ]] && cp \
 	/defaults/blocklist-update.sh /config/blocklist-update.sh
@@ -19,9 +23,11 @@ chown abc:abc \
 	/downloads \
 	/downloads/complete \
 	/downloads/incomplete \
-	/watch
+	/watch \
+	/config/torrent_complete.sh 
 
 chmod 755 /config/blocklist-update.sh
+chmod 755 /config/torrent_complete.sh
 
 sed -i "s/51413/$ENVPORT/g" /defaults/settings.json
 sed -i "s/51413/$ENVPORT/g" /config/settings.json
