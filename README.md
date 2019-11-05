@@ -1,3 +1,72 @@
+# Changes I've made to this fork:
+
+The following scetion is specific to this fork and the changes made, everything below it is the typical linuxserver.io speel. So essentially, this is a special build that is quite literally only for downloading ebooks (specifcally through a FlexGet instance) for use in a Calibre Library. First you should notice the presence of the following file:
+
+>/root/defaults/torrent_complete.sh
+
+So there should be some other checks in FlexGet (see my other forked repo) to ensure only the correct filetypes/files with valid metadata are downloaded, but just in case this will extract "good" ebook file types from a completed torrent. Since we are going to be pushing them to Calibre, we don't care about folder structure or whatever. Then once the file is downloaded, it is simply added to Calibre via calibredb.
+
+To give an idea of how this is set up in my environment, here is a sanitized version of what my flexget looks like:
+
+### FlexGetConfig
+
+```
+tasks:
+  ebooks-torrent1:
+    transmission:
+      host: 192.168.1.whatever
+      port: 9092
+    content_filter:
+      require:
+        - '*.azw'
+        - '*.azw3'
+        - '*.azw4'
+        - '*.djv'
+        - '*.djvu'
+        - '*.epub'
+        - '*.lit'
+        - '*.mobi'
+    rss:
+      https://www.some-rss-feed-for-torrents.com/rss
+    accept_all: yes
+    exec:
+      auto_escape: yes
+      fail_entries: yes
+      on_input:
+        for_entries: bash cdbcheck.bash '{{title}}'
+```
+
+And once that goes through to the transmission container, it should receive the ebook and import it into the appropriate library once its done. That way we can ensure nothing already exists in the library first, and as an added bonus FlexGet keeps track of the seen items. Here is an example of my docker-compose:
+
+### Docker Compose
+
+```
+services:
+  trans-mam-ebooks1:
+    image: seru1us/transmission-with-custom
+    environment:
+      - ENVPORT=8998
+      - CALIBRE_HOST=192.168.1.whatever
+      - CALIBRE_PORT=8765
+      - CALIBRE_LIB=eBooks
+      - CALIBRE_USR=remote
+      - CALIBRE_PWD=hunter2
+      - LANG=en_US.UTF-8
+      - LANGUAGE=en_US.UTF-8
+      - LC_ALL=C
+    volumes:
+      - '/home/me/Docker/transmission_9091:/config'
+      - '/media/md0/Uncategorized/Transmission_9091:/downloads'
+    ports:
+      - '9091:9091'
+      - '8998:8998'
+```
+
+So a few things I'm dong here that you may be able to read about in my FlexGet fork, is that I am dumping all of these in a "Staging" library to manually verify metadata. Calibre is great at metadata, but it isn't perfect. So I verify everything by hand before moving them to my "Production" library with pristine metadata.
+
+So that should be pretty much it. If anyone wants to improve on this, a good project to look at would be to utilize https://github.com/na--/ebook-tools 
+
+
 [![linuxserver.io](https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/linuxserver_medium.png)](https://linuxserver.io)
 
 The [LinuxServer.io](https://linuxserver.io) team brings you another container release featuring :-
